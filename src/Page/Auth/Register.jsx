@@ -28,7 +28,6 @@ export default function Register() {
     const [phoneNumber,setPhoneNumber] = useState('');
     const [password,setPassword] = useState('');
     const [confirmPassword,setConfirmPassword] = useState('');
-
     const [mess,setMessages] = useState('');
     const [openDialogTerm,setOpenDialogTerm] = useState(false);
     const [confirmTerm,setConfirmTerm] = useState(false)
@@ -64,7 +63,6 @@ export default function Register() {
         setUsername('')
         setPassword('')
         setConfirmPassword('')
-        
     }
 
 
@@ -80,6 +78,7 @@ export default function Register() {
             "email":email,
             "phoneNumber":phoneNumber,
             "password":password,
+            "urlImage":""
         }
         
         const id = toast.loading("Vui lòng đợi ...")

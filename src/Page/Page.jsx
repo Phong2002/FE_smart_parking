@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/images/logo_without_name.png";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -25,16 +25,17 @@ import {
     Bars2Icon,
     HomeIcon,
     TableCellsIcon,
-    TicketIcon,
+    TicketIcon, UserGroupIcon, BanknotesIcon,
 } from "@heroicons/react/24/solid";
 
-import requester from "../infrastructure/UserService.jsx"
+import requester from "../infrastructure/requester.js"
 import UserService from "../infrastructure/UserService.jsx";
-import { logoutAction } from "../infrastructure/AuthAPI";
+import { logoutAction ,getInfor} from "../infrastructure/AuthAPI";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 
 
 
-function ProfileMenu() {
+function ProfileMenu(props) {
     const navigate = useNavigate();
 
     const profileMenuItems = [
@@ -73,15 +74,15 @@ function ProfileMenu() {
                     <Typography
                         className="text-[15px] xl:inline min-[100]:hidden"
                     >
-                        {UserService.getFullName()}
+                        {props.fullName}
                     </Typography>
                     <Avatar
                         variant="circular"
                         size="sm"
                         alt="tania andrew"
                         className="border border-gray-900 p-0.5"
-                        src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
-                    />
+                        src={props.avatarUrl}
+    />
                     <ChevronDownIcon
                         strokeWidth={2.5}
                         className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
@@ -122,26 +123,56 @@ function ProfileMenu() {
 }
 
 
-const navListItems = [
-    {
-        label: "Trang chủ",
-        icon: HomeIcon,
-        router: '/',
-    },
-    {
-        label: "Bãi đỗ xe",
-        icon: TableCellsIcon,
-
-        router: '/parkinglot',
-    },
-    {
-        label: "Vé xe",
-        icon: TicketIcon,
-        router: '/parking-pass',
-    },
-];
 
 function NavList() {
+
+    const adminList = [{
+        label: "Quản lý",
+        icon: UserGroupIcon,
+        router: '/manager-management',
+    },
+        {
+            label: "Doanh thu",
+            icon: BanknotesIcon,
+
+            router: '/revenue',
+        },
+    ]
+
+    const history = [
+        {
+            label: "Lịch sử ra vào",
+            icon: InformationCircleIcon,
+            router: '/entry-history',
+        }
+    ]
+
+    const navListItems = [
+        {
+            label: "Trang chủ",
+            icon: HomeIcon,
+            router: '/',
+        },
+        {
+            label: "Bãi đỗ xe",
+            icon: TableCellsIcon,
+
+            router: '/parkinglot',
+        },
+        {
+            label: "Vé xe",
+            icon: TicketIcon,
+            router: '/parking-pass',
+        },
+    ];
+    
+    !UserService.isUser()?navListItems.push(...history):''
+    useEffect(()=>{!UserService.isUser()?navListItems.push(...history):''},[])
+    useEffect(()=>{!UserService.isUser()?navListItems.push(...history):''},[localStorage.getItem('TOKEN')])
+
+    UserService.isAdmin()?navListItems.push(...adminList):''
+    useEffect(()=>{UserService.isAdmin()?navListItems.push(...adminList):''},[])
+    useEffect(()=>{UserService.isAdmin()?navListItems.push(...adminList):''},[localStorage.getItem('TOKEN')])
     const navigate = useNavigate();
     return (
         <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
@@ -166,6 +197,8 @@ function NavList() {
 export default function Page() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [fullName,setFullName] = useState('')
+    const [avatarUrl,setAvatarUrl] = useState('')
     const [isNavOpen, setIsNavOpen] = React.useState(false);
 
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
@@ -173,12 +206,12 @@ export default function Page() {
     React.useEffect(() => {
         window.addEventListener(
             "resize",
-            () => window.innerWidth >= 960 && setIsNavOpen(false),
+            () => window.innerWidth >= 800 && setIsNavOpen(false),
         );
     }, []);
 
     const isLogin = () => {
-        if (requester.isAuthenticated()) {
+        if (UserService.isAuthenticated()) {
         }
         else (
             navigate('/login')
@@ -186,11 +219,20 @@ export default function Page() {
     }
 
     useEffect(isLogin, [])
+    useEffect(()=>{getInfor(localStorage.getItem('TOKEN'))},[localStorage.getItem('LASTNAME')])
+    useEffect(()=>{
+            setAvatarUrl(UserService.getAvtURL()?requester.getImage(UserService.getAvtURL()):"https://cdn3.iconfinder.com/data/icons/vector-icons-6/96/256-512.png")
+            setFullName(UserService.getFullName()??"")
+    },[])
+    useEffect(()=>{
+        setAvatarUrl(UserService.getAvtURL()?requester.getImage(UserService.getAvtURL()):"https://cdn3.iconfinder.com/data/icons/vector-icons-6/96/256-512.png")
+        setFullName(UserService.getFullName()??"")
+},[UserService.getAvtURL()])
 
     return (
-        <div className="-m-6 max-h-[100%] pt-8 w-[calc(100%)]">
-            <Navbar className="sticky top-0 z-10 mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
-                <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
+        <div className=" max-h-[100%] flex flex-col justify-center pt-8 w-[calc(100%)]">
+            <Navbar className="sticky top-0 mx-auto max-w-screen-xl w-[100vw] p-2 z-50 lg:rounded-full lg:pl-6">
+                <div className="relative mx-auto flex items-center justify-between text-blue-gray-900 z-50">
                     <Typography
                         className="mr-4 ml-2 cursor-pointer py-1.5 font-medium select-none"
                         onClick={() => navigate("/")}
@@ -211,9 +253,9 @@ export default function Page() {
                     >
                         <Bars2Icon className="h-6 w-6" />
                     </IconButton>
-                    <ProfileMenu />
+                    <ProfileMenu fullName={fullName} avatarUrl={avatarUrl}/>
                 </div>
-                <Collapse open={isNavOpen} className="overflow-scroll">
+                <Collapse open={isNavOpen} className="overflow-scroll w-[100vw]">
                     <NavList />
                 </Collapse>
             </Navbar>

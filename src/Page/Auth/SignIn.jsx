@@ -75,7 +75,7 @@ export default function SignIn() {
             </Typography>
             <CardBody className="flex flex-col gap-4 px-6 pt-6 pb-1">
                 <Input label="Tài khoản hoặc email" size="lg" value={username} onChange={e=>setUserName(e.target.value)} />
-                <Input label="Mật khẩu" size="lg" value={password} onChange={e=>setPassword(e.target.value)}  />
+                <Input label="Mật khẩu" type="password" size="lg" value={password} onChange={e=>setPassword(e.target.value)}  />
                 <div className="grid place-items-end">
                     <Typography 
                     color = "blue"

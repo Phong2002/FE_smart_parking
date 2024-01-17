@@ -6,16 +6,6 @@ export default {
         return window.localStorage.getItem('TOKEN') !== null
     },
 
-    getEmail: () => {
-        const token = localStorage.getItem('TOKEN')
-        if (token !== null && token !== undefined) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-
-            if (payload) {
-                return payload['email'];
-            }
-        }
-    },
 
     getUserId: () => {
         const token = localStorage.getItem('TOKEN')
@@ -38,26 +28,29 @@ export default {
         }
     },
 
-
-
     getFullName: () => {
-        const token = localStorage.getItem('TOKEN')
-        if (token !== null && token !== undefined) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload) {
-                return payload['fullname'];
-            }
-        }
+        return localStorage.getItem('LASTNAME') +" "+ localStorage.getItem('FIRSTNAME')
+
+    },
+    getFirstName: () => {
+        return localStorage.getItem('FIRSTNAME')
+    },
+    getLastName: () => {
+        return localStorage.getItem('LASTNAME')
     },
 
     getAvtURL: () => {
-        const token = localStorage.getItem('TOKEN')
-        if (token !== null && token !== undefined) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload) {
-                return payload['avtURL'];
-            }
-        }
+        return localStorage.getItem('IMAGEURL')
+    },
+
+    getPhoneNumber: () => {
+        return localStorage.getItem('PHONENUMBER')
+    },
+    getUsername: () => {
+        return localStorage.getItem('USERNAME')
+    },
+    getEmail: () => {
+        return localStorage.getItem('EMAIL')
     },
 
 

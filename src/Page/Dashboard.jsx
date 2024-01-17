@@ -5,7 +5,10 @@ import {
 } from "@material-tailwind/react";
 
 import parking1 from "../assets/images/carousel_smart_parking/parking1.jpg";
+import parking3 from "../assets/images/carousel_smart_parking/parking1.png";
 import parking2 from "../assets/images/carousel_smart_parking/parking2.jpg";
+import requester from "../infrastructure/requester.js";
+import { useEffect, useState } from "react";
 
 const listReasons = [
 
@@ -32,9 +35,27 @@ const listReasons = [
 ];
 
 export default function Dashboard() {
+    const [listPrice, setListPrice] = useState()
 
+    const handleGetAllPrice = () => {
+        const endpoint = "api/v1/price"
+        const getAllParkingLot = (response) => {
+            setListPrice([...response.data]);
+        }
+        requester.get(endpoint, getAllParkingLot)
+    }
 
+    function formatCurrency(number) {
+        const formattedNumber = new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+          minimumFractionDigits: 0, // Số lẻ
+        }).format(number);
+      
+        return formattedNumber;
+      }
 
+    useEffect(handleGetAllPrice, [])
 
     document.title = 'Trang chủ'
     return (
@@ -65,11 +86,77 @@ export default function Dashboard() {
                     className="h-full w-full object-cover"
                 />
                 <img
-                    src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
+                    src={parking3}
                     alt="image 3"
                     className="h-full w-full object-cover"
                 />
             </Carousel>
+            <div className="my-6 p-5 bg-gray-100 rounded-xl shadow-lg">
+                <Typography className={"font-bold text-[24px]"}>Bảng giá gửi xe tại <span className={"text-blue-phenikaa"}>
+                    Phenikaa</span><span className={"text-orange-phenikaa"}>Park</span>  mới nhất</Typography>
+                <tr>
+                    <td >
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b font-bold text-[16px] border-blue-gray-200"
+                        >
+                            Giá vé tháng
+                        </Typography>
+                    </td>
+                    <td >
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b text-[16px] border-blue-gray-200"
+                        >
+                            {listPrice?formatCurrency(listPrice[0].price):''}
+                        </Typography>
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        <Typography
+                        
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b font-bold text-[16px] border-blue-gray-200"
+                        >
+                            Giá vé từ 6h sáng đến 6h tối (cùng ngày)
+                        </Typography>
+                    </td>
+                    <td >
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b text-[16px] border-blue-gray-200"
+                        >
+                            {listPrice?formatCurrency(listPrice[1].price):''}
+                        </Typography>
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        <Typography
+                        
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b font-bold text-[16px] border-blue-gray-200"
+                        >
+                            Giá vé từ 6h tối đến 6h sáng ngày hôm sau
+                        </Typography>
+                    </td>
+                    <td >
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal p-4 border-b text-[16px] border-blue-gray-200"
+                        >
+                            {listPrice?formatCurrency(listPrice[2].price):''}
+                        </Typography>
+                    </td>
+                </tr>
+            </div>
             <div className="grid place-items-center my-8 ">
                 <Typography className="text-blue-phenikaa text-[35px] font-bold text-center min-[320px]:w-[300px]">
                     Tại sao chọn chúng tôi ?</Typography>
@@ -96,7 +183,7 @@ export default function Dashboard() {
                                 {reason.content}
                             </Typography>
                         </CardBody>
-                     
+
                     </Card>
 
                 })}
